@@ -1,0 +1,74 @@
+/* IntelliJ Light主题 - 经典专业 */
+
+.code-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+    -fx-font-family: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-border-color: #c9c9c9;
+    -fx-border-width: 1px;
+}
+
+.code-area .paragraph-box:has-caret {
+    -fx-background-color: #f2f2f2;
+}
+
+/* 行号样式 */
+.lineno {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #999999;
+    -fx-padding: 0.0em 0.8em 0.0em 0.8em;
+    -fx-font-family: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 13px;
+    -fx-border-color: #d4d4d4;
+    -fx-border-width: 0 1px 0 0;
+}
+
+/* 关键字 - IntelliJ蓝 */
+.keyword {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+/* 字符串 - IntelliJ绿 */
+.string {
+    -fx-fill: #008000;
+}
+
+/* 注释 - IntelliJ灰 */
+.comment {
+    -fx-fill: #808080;
+    -fx-font-style: italic;
+}
+
+/* 注解 - IntelliJ黄 */
+.annotation {
+    -fx-fill: #808000;
+    -fx-font-weight: bold;
+}
+
+/* 数字 - IntelliJ蓝 */
+.number {
+    -fx-fill: #0000ff;
+}
+
+/* 类名 - IntelliJ深蓝 */
+.class-name {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+/* 括号 */
+.paren, .brace, .bracket {
+    -fx-fill: #000000;
+    -fx-font-weight: bold;
+}
+
+.semicolon {
+    -fx-fill: #000000;
+}
+
+.search-highlight {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: #000000;
+} 

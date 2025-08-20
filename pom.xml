@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.alphabugx</groupId>
+    <artifactId>Jawd</artifactId>
+    <version>1.0</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javafx.version>11.0.2</javafx.version>
+    </properties>
+
+    <dependencies>
+        <!-- JavaFX Controls -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- JavaFX FXML -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- RichTextFX for advanced code editor (Java 8 compatible) -->
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerVersion>1.8</compilerVersion>
+                    <fork>true</fork>
+                    <executable>C:\Program Files\Java\jdk1.8.0_261\bin\javac.exe</executable>
+                    <compilerArgs>
+                        <arg>-source</arg>
+                        <arg>1.8</arg>
+                        <arg>-target</arg>
+                        <arg>1.8</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- JavaFX Maven Plugin -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.3</version>
+                <configuration>
+                    <mainClass>com.alphabugx.Jawd</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Shade Plugin - 打包所有依赖 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.alphabugx.Jawd</mainClass>
+                                </transformer>
+                            </transformers>
+                            <finalName>${project.artifactId}-${project.version}-fat</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- ProGuard Plugin - 代码混淆和保护 -->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <proguardVersion>7.2.2</proguardVersion>
+                    <injar>${project.artifactId}-${project.version}-fat.jar</injar>
+                    <outjar>${project.artifactId}-${project.version}-protected.jar</outjar>
+                    <obfuscate>true</obfuscate>
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                        <lib>${java.home}/lib/jce.jar</lib>
+                        <lib>${java.home}/lib/jsse.jar</lib>
+                        <lib>${java.home}/lib/charsets.jar</lib>
+                    </libs>
+                    <assembly>
+                        <inclusions>
+                            <inclusion>
+                                <groupId>org.openjfx</groupId>
+                            </inclusion>
+                        </inclusions>
+                    </assembly>
+                    <options>
+                        <!-- 启用优化和混淆 -->
+                        <option>-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*</option>
+                        <option>-optimizationpasses 5</option>
+                        <option>-allowaccessmodification</option>
+                        <option>-dontpreverify</option>
+
+                        <!-- Java 8 兼容性 -->
+                        <option>-target 1.8</option>
+                        <option>-forceprocessing</option>
+
+                        <!-- 更激进的混淆设置 -->
+                        <option>-overloadaggressively</option>
+                        <option>-repackageclasses ''</option>
+                        <option>-flattenpackagehierarchy</option>
+                        <option>-dontusemixedcaseclassnames</option>
+
+                        <!-- 保持主类 -->
+                        <option>-keep public class com.alphabugx.Jawd {
+                            public static void main(java.lang.String[]);
+                            public void start(javafx.stage.Stage);
+                            }</option>
+
+                        <!-- 保持Main类（如果存在） -->
+                        <option>-keep public class com.alphabugx.Main {
+                            public static void main(java.lang.String[]);
+                            }</option>
+
+                        <!-- 保持FXML控制器 -->
+                        <option>-keepclassmembers class * {
+                            @javafx.fxml.FXML *;
+                            }</option>
+
+                        <!-- 保持JavaFX应用程序类 -->
+                        <option>-keep class * extends javafx.application.Application {
+                            public void start(javafx.stage.Stage);
+                            }</option>
+
+                        <!-- 保持配置类的最小接口 -->
+                        <option>-keep public class com.alphabugx.config.AppConfig {
+                            public static com.alphabugx.config.AppConfig getInstance();
+                            public java.lang.String getJdkPath();
+                            public java.lang.String getCfrPath();
+                            }</option>
+
+                        <!-- 保持安全管理器的公共静态方法 -->
+                        <option>-keep public class com.alphabugx.security.SecurityManager {
+                            public static void performSecurityCheck();
+                            public static boolean isSecureEnvironment();
+                            public static java.lang.String getAppName();
+                            public static java.lang.String getVersion();
+                            public static void performCleanup();
+                            }</option>
+
+                        <!-- 完全混淆核心逻辑类 -->
+                        <option>-keep,allowobfuscation,allowshrinking class com.alphabugx.jar.** {
+                            public *;
+                            }</option>
+
+                        <option>-keep,allowobfuscation,allowshrinking class com.alphabugx.editor.** {
+                            public *;
+                            }</option>
+
+                        <!-- 完全混淆安全相关的内部类 -->
+                        <option>-keep,allowobfuscation,allowshrinking class com.alphabugx.security.StringEncryption {
+                            public static java.lang.String encrypt(java.lang.String);
+                            public static java.lang.String decrypt(java.lang.String);
+                            }</option>
+
+                        <!-- 保护高级反编译保护类的公共接口 -->
+                        <option>-keep,allowobfuscation,allowshrinking class com.alphabugx.security.AntiDecompileShield {
+                            public static boolean isProtectionActive();
+                            public static void performDecoySecurityCheck();
+                            }</option>
+
+                        <!-- 保护动态保护类 -->
+                        <option>-keep,allowobfuscation,allowshrinking class com.alphabugx.security.DynamicProtection {
+                            public static java.lang.String getDynamicString(java.lang.String);
+                            public static boolean performObfuscatedValidation();
+                            }</option>
+
+                        <!-- 移除调试信息 -->
+                        <option>-keepattributes</option>
+
+                        <!-- 字符串加密 -->
+                        <option>-adaptclassstrings</option>
+                        <option>-adaptresourcefilenames</option>
+                        <option>-adaptresourcefilecontents</option>
+
+                        <!-- 忽略警告 -->
+                        <option>-dontwarn</option>
+                        <option>-ignorewarnings</option>
+
+                        <!-- 移除未使用的代码 -->
+                        <option>-dontshrink</option>
+                    </options>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.guardsquare</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>7.2.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TreeItem?>
+<?import javafx.scene.control.TreeView?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.261" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alphabugx.FileEditorApp">
+    <!-- 顶部菜单栏 -->
+    <top>
+        <MenuBar fx:id="menuBar">
+            <menus>
+                <Menu text="打开Jar文件">
+                    <items>
+                        <MenuItem text="选择Jar文件..." fx:id="openJarMenuItem" onAction="#onOpenJar"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="JDK路径配置" fx:id="jdkConfigMenuItem" onAction="#onJdkConfig"/>
+                        <MenuItem text="CFR工具配置" fx:id="cfrConfigMenuItem" onAction="#onCfrConfig"/>
+                    </items>
+                </Menu>
+                <Menu text="导出Jar包">
+                    <items>
+                        <MenuItem text="打包并导出..." fx:id="packageMenuItem" onAction="#onPackageButtonClick"/>
+                    </items>
+                </Menu>
+                <Menu text="编辑">
+                    <items>
+                        <MenuItem text="撤销" fx:id="undoMenuItem"/>
+                        <MenuItem text="重做" fx:id="redoMenuItem"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="剪切" fx:id="cutMenuItem"/>
+                        <MenuItem text="复制" fx:id="copyMenuItem"/>
+                        <MenuItem text="粘贴" fx:id="pasteMenuItem"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="查找" fx:id="findMenuItem" onAction="#onFind"/>
+                        <MenuItem text="全局搜索" fx:id="globalSearchMenuItem" onAction="#onGlobalSearch"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="保存" fx:id="saveMenuItem" onAction="#onSaveButtonClick"/>
+                        <MenuItem text="另存为" fx:id="saveAsMenuItem" onAction="#onSaveAsFile"/>
+                    </items>
+                </Menu>
+
+                <Menu text="视图">
+                    <items>
+                        <CheckMenuItem text="详细进度模式" fx:id="detailProgressMenuItem" onAction="#onToggleProgressMode"/>
+                    </items>
+                </Menu>
+                <Menu text="关于">
+                    <items>
+                        <MenuItem text="关于JAWD" fx:id="aboutMenuItem" onAction="#onAbout"/>
+                        <MenuItem text="退出" fx:id="exitMenuItem" onAction="#onExit"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+
+    <!-- 中间区域：使用 SplitPane 来动态调整左右区域宽度 -->
+    <center>
+        <SplitPane dividerPositions="0.3" fx:id="splitPane" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <!-- 左侧区域：TreeView 展示目录 -->
+            <items>
+                <AnchorPane minWidth="150.0" prefWidth="200.0">
+                    <ScrollPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" fitToWidth="true" fitToHeight="true">
+                        <content>
+                            <TreeView fx:id="treeView" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                <root>
+                                    <TreeItem value="Root"/>
+                                </root>
+                            </TreeView>
+                        </content>
+                    </ScrollPane>
+                </AnchorPane>
+
+                <!-- 右侧区域：TabPane 展示文本编辑 -->
+                <AnchorPane minWidth="300.0" prefWidth="600.0">
+                    <TabPane fx:id="tabPane" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" tabClosingPolicy="ALL_TABS">
+                        <tabs>
+                            <!-- 初始标签页将由代码动态创建 -->
+                        </tabs>
+                    </TabPane>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+
+    <!-- 底部区域：状态栏 + 日志输出 -->
+    <bottom>
+        <VBox>
+            <!-- 状态栏 -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 5px 10px; -fx-border-color: #cccccc; -fx-border-width: 1px 0 0 0;">
+                <Label fx:id="lineColumnLabel" text="行: 1, 列: 1"/>
+                <Separator orientation="VERTICAL"/>
+                <Label fx:id="saveStatusLabel" text="已保存"/>
+                <Separator orientation="VERTICAL"/>
+                <Label fx:id="filePathLabel" text="无文件"/>
+                <Separator orientation="VERTICAL"/>
+                <Button fx:id="toggleLogButton" text="显示日志" onAction="#onToggleLogArea" style="-fx-font-size: 10px; -fx-padding: 2px 8px;"/>
+                <Button fx:id="clearLogButton" text="清空日志" onAction="#onClearLog" style="-fx-font-size: 10px; -fx-padding: 2px 8px;"/>
+            </HBox>
+            
+            <!-- 日志输出区域 -->
+            <VBox fx:id="logContainer" managed="false" visible="false" style="-fx-border-color: #cccccc; -fx-border-width: 1px 0 0 0;">
+                <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #2b2b2b; -fx-padding: 5px 10px;">
+                    <Label text="📊 系统日志" style="-fx-text-fill: #00ff00; -fx-font-weight: bold;"/>
+                    <Label fx:id="logStatusLabel" text="就绪" style="-fx-text-fill: #cccccc;"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: #1e1e1e;">
+                    <TextArea fx:id="logTextArea" editable="false" wrapText="true" 
+                              style="-fx-control-inner-background: #1e1e1e; -fx-text-fill: #ffffff; -fx-font-family: 'Consolas', 'Monaco', monospace; -fx-font-size: 12px;"
+                              prefRowCount="10" maxHeight="200"/>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </bottom>
+</BorderPane>
